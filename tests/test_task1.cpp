@@ -91,42 +91,52 @@ void RunSortTests(SortFunc sort_func, const std::string &algo_name)
     }
 }
 
+template <typename SortFunc>
+void RunComparatorTests(SortFunc sort_func, const std::string &algo_name)
+{
+    /* Random (int) descending order */
+    {
+        auto data = generate_random_ints(1000);
+        auto expected = data;
+        std::sort(expected.begin(), expected.end(), std::greater<int>{});
+        sort_func(data.begin(), data.end(), std::greater<int>{});
+
+        EXPECT_EQ(data, expected) << algo_name << " failed with custom comparator";
+    }
+}
+
 /* Suite */
-TEST(Task1_QuickSort, Comprehensive)
+TEST(Task1_QuickSort, Standard)
 {
-    RunSortTests([](auto first, auto last)
-                 { task1::algorithm::quick_sort(first, last); }, "QuickSort");
+    RunSortTests([](auto f, auto l) { task1::algorithm::quick_sort(f, l); }, "QuickSort");
 }
-
-TEST(Task1_StableSort, Comprehensive)
+TEST(Task1_QuickSort, WithComparator)
 {
-    RunSortTests([](auto first, auto last)
-                 { task1::algorithm::stable_sort(first, last); }, "StableSort");
+    RunComparatorTests([](auto f, auto l, auto c) { task1::algorithm::quick_sort(f, l, c); }, "QuickSort");
 }
-
-TEST(Task1_HeapSort, Comprehensive)
+TEST(Task1_QuickSort, Parallel_Execution)
 {
-    RunSortTests([](auto first, auto last)
-                 { task1::algorithm::heap_sort(first, last); }, "HeapSort");
-}
-
-/* Comparator */
-TEST(Task1_QuickSort, CustomComparator)
-{
-    std::vector<int> data = {1, 5, 2, 4, 3};
-    std::vector<int> expected = {5, 4, 3, 2, 1};
-
-    task1::algorithm::quick_sort(data.begin(), data.end(), std::greater<int>{});
-
+    std::vector<int> data = generate_random_ints(5000);
+    auto expected = data;
+    std::sort(expected.begin(), expected.end());
+    task1::algorithm::quick_sort(std::execution::par, data.begin(), data.end());
     EXPECT_EQ(data, expected);
 }
 
-TEST(Task1_HeapSort, CustomComparator)
+TEST(Task1_StableSort, Standard)
 {
-    std::vector<int> data = {1, 5, 2, 4, 3};
-    std::vector<int> expected = {5, 4, 3, 2, 1};
+    RunSortTests([](auto f, auto l) { task1::algorithm::stable_sort(f, l); }, "StableSort");
+}
+TEST(Task1_StableSort, WithComparator)
+{
+    RunComparatorTests([](auto f, auto l, auto c) { task1::algorithm::stable_sort(f, l, c); }, "StableSort");
+}
 
-    task1::algorithm::heap_sort(data.begin(), data.end(), std::greater<int>{});
-
-    EXPECT_EQ(data, expected);
+TEST(Task1_HeapSort, Standard)
+{
+    RunSortTests([](auto f, auto l) { task1::algorithm::heap_sort(f, l); }, "HeapSort");
+}
+TEST(Task1_HeapSort, WithComparator)
+{
+    RunComparatorTests([](auto f, auto l, auto c) { task1::algorithm::heap_sort(f, l, c); }, "HeapSort");
 }
