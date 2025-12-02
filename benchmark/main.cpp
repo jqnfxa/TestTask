@@ -12,14 +12,8 @@
 
 using namespace std::chrono;
 
-enum class DataType
-{
-    Integers,
-    Strings
-};
-
 template <typename T>
-std::vector<T> generate_data(std::size_t size, DataType type)
+std::vector<T> generate_data(std::size_t size)
 {
     std::vector<T> data;
     data.reserve(size);
@@ -79,7 +73,7 @@ void run_benchmark_suite(size_t size, const std::string &type_name)
 {
     std::cout << " Benchmark " << size << " " << type_name << "\n";
 
-    auto master_data = generate_data<T>(size, std::is_same_v<T, int> ? DataType::Integers : DataType::Strings);
+    auto master_data = generate_data<T>(size);
 
     /* Quick sort */
     {

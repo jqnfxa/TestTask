@@ -53,7 +53,7 @@ void HullController::loadPointsFromFile(const QUrl &fileUrl)
     while (!in.atEnd())
     {
         QString line = in.readLine();
-        QStringList parts = line.split(" ", QString::SkipEmptyParts);
+        QStringList parts = line.split(" ", Qt::SkipEmptyParts);
         if (parts.size() == 2)
         {
             m_points.push_back({parts[0].toDouble(), parts[1].toDouble()});
