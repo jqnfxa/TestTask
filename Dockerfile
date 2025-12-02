@@ -9,6 +9,10 @@ RUN apt-get update && apt-get install -y \
     git \
     qtbase5-dev \
     qt5-qmake \
+    qtdeclarative5-dev \
+    qml-module-qtquick-controls2 \
+    qml-module-qtquick-layouts \
+    qml-module-qt-labs-platform \
     && rm -rf /var/lib/apt/lists/*
 
 
