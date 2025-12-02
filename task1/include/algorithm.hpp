@@ -9,6 +9,7 @@
 #include "traits.hpp"
 #include "quick_sort_impl.hpp"
 #include "stable_sort_imlp.hpp"
+#include "heap_sort_impl.hpp"
 
 
 namespace task1::algorithm
@@ -73,13 +74,30 @@ namespace task1::algorithm
         stable_sort(first, last, std::less<T>{});
     }
 
-    template <std::random_access_iterator RandomIt, typename Compare>
-    requires std::sortable<RandomIt, Compare>
-    void heap_sort(RandomIt first, RandomIt last, Compare comp)
+    template <class ExecutionPolicy, std::random_access_iterator RandomIt, class Compare>
+    requires std::is_execution_policy_v<std::decay_t<ExecutionPolicy>> &&
+             traits::random_access_sortable<RandomIt, Compare>
+    void heap_sort(ExecutionPolicy &&, RandomIt first, RandomIt last, Compare comp)
     {
+        implementation::heap_sort_impl(first, last, comp);
     }
 
-    template <std::random_access_iterator RandomIt>
+    template <class ExecutionPolicy, std::random_access_iterator RandomIt>
+    requires std::is_execution_policy_v<std::decay_t<ExecutionPolicy>>
+    void heap_sort(ExecutionPolicy &&policy, RandomIt first, RandomIt last)
+    {
+        using T = typename std::iterator_traits<RandomIt>::value_type;
+        heap_sort(std::forward<ExecutionPolicy>(policy), first, last, std::less<T>{});
+    }
+
+    template<std::random_access_iterator RandomIt, class Compare>
+    requires traits::random_access_sortable<RandomIt, Compare>
+    void heap_sort(RandomIt first, RandomIt last, Compare comp)
+    {
+        implementation::heap_sort_impl(first, last, comp);
+    }
+
+    template<std::random_access_iterator RandomIt>
     void heap_sort(RandomIt first, RandomIt last)
     {
         using T = typename std::iterator_traits<RandomIt>::value_type;
